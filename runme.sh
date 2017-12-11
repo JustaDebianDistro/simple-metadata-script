@@ -24,7 +24,7 @@ dialog --no-cancel --inputbox "what year is the song from?" 10 60 2> /tmp/.track
 	YEAR=$(cat /tmp/.trackyear)
 
 	dialog --no-cancel --inputbox "what is the songs genre?" 10 60 2> /tmp/.genre
-	GENRE=$(cat /tmp/.trackgenre)
+	GENRE=$(cat /tmp/.genre)
 	
     ffmpeg -i ~/Music/$FNAME \
     -metadata title="$SNAME" \
