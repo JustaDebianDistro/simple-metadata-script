@@ -1,32 +1,38 @@
-## JustaDebianDistros's simple ffmpeg metadata format script 
+## JustaDebianDistros's simple ffmpeg metadata format script
 
 #!/bin/bash
-    
-    	dialog --no-cancel --inputbox "what is the Artist name?" 10 60 2> /tmp/.name
-	NAME=$(cat /tmp/.name)
-	
-	dialog --no-cancel --inputbox "what is the file name?" 10 60 2> /tmp/.filename
-	FNAME=$(cat /tmp/.filename)
-	
-dialog --no-cancel --inputbox "what is the New file name?" 10 60 2> /tmp/.newfilename
-        NFNAME=$(cat /tmp/.newfilename)      
 
-	dialog --no-cancel --inputbox "what is the song name?" 10 60 2> /tmp/.songname
-	SNAME=$(cat /tmp/.songname)
+### FOLDER CREATION ###
+temp_dir=$(mktemp -d -t mdfolder.XXXXXX) || exit 1
+echo "tmpdir = ${temp_dir}"
 
-	dialog --no-cancel --inputbox "what is the album name?" 10 60 2> /tmp/.albumname
-	ANAME=$(cat /tmp/.albumname)
+### Input ###
+dialog  --inputbox "What is the file's name?" 10 60 2> ${temp_dir}/filename
+	FNAME=$(cat ${temp_dir}/filename)
 
-dialog --no-cancel --inputbox "what is the song track number?" 10 60 2> /tmp/.tracknum
-	TN=$(cat /tmp/.tracknum)
+dialog  --inputbox "what is the NEW file name?" 10 60 2> ${temp_dir}/newfilename
+        NFNAME=$(cat ${temp_dir}/newfilename)
 
-dialog --no-cancel --inputbox "what year is the song from?" 10 60 2> /tmp/.trackyear
-	YEAR=$(cat /tmp/.trackyear)
+dialog --inputbox "What is the artist's name?" 10 60 2> ${temp_dir}/name
+	NAME=$(cat ${temp_dir}/name)
 
-	dialog --no-cancel --inputbox "what is the songs genre?" 10 60 2> /tmp/.genre
-	GENRE=$(cat /tmp/.genre)
-	
-    ffmpeg -i ~/Music/$FNAME \
+dialog  --inputbox "what is the song name?" 10 60 2> ${temp_dir}/songname
+	SNAME=$(cat ${temp_dir}/songname)
+
+dialog  --inputbox "what is the album name?" 10 60 2> ${temp_dir}/albumname
+	ANAME=$(cat ${temp_dir}/albumname)
+
+dialog  --inputbox "what is the song track number?" 10 60 2> ${temp_dir}/tracknum
+	TN=$(cat ${temp_dir}/tracknum)
+
+dialog  --inputbox "what year is the song from?" 10 60 2> ${temp_dir}/trackyear
+	YEAR=$(cat ${temp_dir}/trackyear)
+
+dialog  --inputbox "what is the songs genre?" 10 60 2> ${temp_dir}/genre
+	GENRE=$(cat ${temp_dir}/genre)
+
+### ffmpeg  ###
+ffmpeg -i ~/Music/$FNAME \
     -metadata title="$SNAME" \
     -metadata artist="$NAME" \
     -metadata composer="$NAME" \
@@ -42,12 +48,6 @@ dialog --no-cancel --inputbox "what year is the song from?" 10 60 2> /tmp/.track
     -acodec copy \
     -y ~/Music/$NFNAME && rm -rf $FNAME
 
-	rm -rf /tmp/.name
-	rm -rf /tmp/.filename
-	rm -rf /tmp/.newfilename
-	rm -rf /tmp/.songname
-	rm -rf /tmp/.tracknum
-	rm -rf /tmp/.trackyear
-	rm -rf /tmp/.albumname
-	rm -rf /tmp/.genre
-clear
+### Clean up option  ###
+dialog --no-cancel --yesno "Delete Folder and log files?" 10 60 && rm -R ${temp_dir} && clear || echo "tempdir is here ${temp_dir}" && exit 1
+
